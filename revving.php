@@ -9,6 +9,21 @@
 	GitHub Plugin URI: https://github.com/szepeviktor/resource-versioning
 	Options: O1_REMOVE_ALL_QARGS
 */
+/**
+ * Trigger fail2ban
+ */
+if ( ! function_exists( 'add_filter' ) ) {
+    error_log( 'Break-in attempt detected: revving_direct_access '
+        . addslashes( @$_SERVER['REQUEST_URI'] )
+    );
+    ob_get_level() && ob_end_clean();
+    if ( ! headers_sent() ) {
+        header( 'Status: 403 Forbidden' );
+        header( 'HTTP/1.1 403 Forbidden', true, 403 );
+        header( 'Connection: Close' );
+    }
+    exit;
+}
 // ----------------------------------------------------------------------------------------------------
 // Register Activation Hook
 // ----------------------------------------------------------------------------------------------------
@@ -85,21 +100,6 @@ RewriteRule ^(.+)\.\d\d+\.(js|css|png|jpg|jpeg|gif|ico)$ $1.$2 [NC,L]
 // ----------------------------------------------------------------------------------------------------
 // @ViktorSzépe Code
 // ----------------------------------------------------------------------------------------------------
-/**
- * Trigger fail2ban
- */
-if ( ! function_exists( 'add_filter' ) ) {
-    error_log( 'Break-in attempt detected: revving_direct_access '
-        . addslashes( @$_SERVER['REQUEST_URI'] )
-    );
-    ob_get_level() && ob_end_clean();
-    if ( ! headers_sent() ) {
-        header( 'Status: 403 Forbidden' );
-        header( 'HTTP/1.1 403 Forbidden', true, 403 );
-        header( 'Connection: Close' );
-    }
-    exit;
-}
 /**
  * Filter script and style source URL-s.
  */
@@ -206,15 +206,3 @@ function ResourceVersioning_deactivation_hook() {
 		insert_with_markers($htaccess_file, '> File Query Converter to File Versions.', '');
 	}
 }
-// ======================================================================================================================================================
-//
-if ( ! function_exists( 'add_action' ) ) { header( 'Status: 403 Forbidden' ); header( 'HTTP/1.1 403 Forbidden' ); exit(); }
-//
-// --------------- This serves as a security enhancement for when hackers may attempt to scan the directory of this file.
-// --------------- This will give the hacker the wrong Header Status, hopefully misleading the hacker
-// --------------- to think that this directory is blocked by the hosting itself (which may not be true) 
-// --------------- So hopefully the hacker leaves this directory alone because they will think they need to enter through the hosting account 
-// --------------- to achieve their hacking desire. But in reality, we just lied to them.
-// --------------- Is this lying a good thing? Will good karma return to us under this lie? I concur. It will. :)
-//
-// ======================================================================================================================================================
